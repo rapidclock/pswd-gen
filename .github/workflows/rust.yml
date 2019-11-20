@@ -4,12 +4,16 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
+    - name: Tests
       run: cargo test --verbose
+    - name: rust-clippy-check
+      uses: actions-rs/clippy-check@v1.0.5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        args: --all-features
+        name: clippy-check
