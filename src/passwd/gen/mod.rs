@@ -1,52 +1,83 @@
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::seq::SliceRandom;
+use rand::{rngs::StdRng, SeedableRng};
+
 use super::config::PasswordConfig;
 
-type Byte = u8;
-
-pub struct PasswordGenerator <'a> {
+pub struct PasswordGenerator<'a> {
     generator: StdRng,
     conf: &'a PasswordConfig,
 }
 
-struct ByteRange {
-    low: Byte,
-    high: Byte,
+type Category = (Vec<char>, StdRng);
+type WeightedCategory = (Category, usize);
+
+fn get_lowercase_category(weight: usize) -> WeightedCategory {
+    (
+        (
+            (b'a'..b'z').map(char::from).collect::<Vec<_>>(),
+            StdRng::from_entropy(),
+        ),
+        weight,
+    )
 }
 
-//struct GenDist {
-//    lower_case_count: usize,
-//    upper_case_count: usize,
-//    digit_count: usize,
-//}
+fn get_uppercase_category(weight: usize) -> WeightedCategory {
+    (
+        (
+            (b'A'..b'Z').map(char::from).collect::<Vec<_>>(),
+            StdRng::from_entropy(),
+        ),
+        weight,
+    )
+}
 
-const LOWER_CASE_CHARS: ByteRange = ByteRange{low: b'a', high: b'z'};
-const UPPER_CASE_CHARS: ByteRange = ByteRange{low: b'A', high: b'Z'};
-const DIGITS: ByteRange = ByteRange{low: b'0', high: b'9'};
+fn get_digit_category(weight: usize) -> WeightedCategory {
+    (
+        (
+            (b'0'..b'9').map(char::from).collect::<Vec<_>>(),
+            StdRng::from_entropy(),
+        ),
+        weight,
+    )
+}
 
-impl <'b> PasswordGenerator<'b> {
-    pub fn new(config : &'b PasswordConfig) -> Self {
-        PasswordGenerator{generator: StdRng::from_entropy(), conf: config}
+fn get_symbol_category(symbols: Option<&Vec<char>>, weight: usize) -> WeightedCategory {
+    ((symbols.unwrap().clone(), StdRng::from_entropy()), weight)
+}
+
+impl<'b> PasswordGenerator<'b> {
+    pub fn new(config: &'b PasswordConfig) -> Self {
+        PasswordGenerator {
+            generator: StdRng::from_entropy(),
+            conf: config,
+        }
     }
 
-    fn rand_char_from_byte_range(&mut self, range: &ByteRange) -> char {
-        char::from(self.generator.gen_range(range.low, range.high))
+    fn rand_char_from_byte_range(&mut self, category: &Category) -> char {
+        category.0.choose(&mut self.generator).copied().unwrap()
     }
 
     pub fn generate(&mut self) -> String {
         let mut password = String::with_capacity(self.conf.length);
-        let mut ranges = Vec::with_capacity(3);
+        let mut ranges: Vec<WeightedCategory> = Vec::with_capacity(4);
         if self.conf.caps {
-            ranges.push(UPPER_CASE_CHARS);
+            ranges.push(get_uppercase_category(6));
         }
         if self.conf.letters {
-            ranges.push(LOWER_CASE_CHARS);
+            ranges.push(get_lowercase_category(6));
         }
         if self.conf.numbers {
-            ranges.push(DIGITS);
+            ranges.push(get_digit_category(5));
+        }
+        if self.conf.symbols.is_some() {
+            ranges.push(get_symbol_category(self.conf.symbols.as_ref(), 3));
         }
         for _ in 0..self.conf.length {
-            let selected_range_index : usize = self.generator.gen::<usize>() % ranges.len();
-            password.push(self.rand_char_from_byte_range(ranges.get(selected_range_index).unwrap()));
+            let category = &ranges
+                .choose_weighted(&mut self.generator, |item| item.1)
+                .unwrap()
+                .0;
+            password.push(self.rand_char_from_byte_range(category));
         }
         password
     }

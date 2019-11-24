@@ -1,6 +1,6 @@
 [package]
-name = "pass-gen"
-version = "0.1.0"
+name = "pswd-gen"
+version = "0.2.0"
 authors = ["rapidclock"]
 edition = "2018"
 

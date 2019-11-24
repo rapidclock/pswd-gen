@@ -4,7 +4,7 @@ pub struct PasswordConfig {
     pub numbers: bool,
     pub caps: bool,
     pub length: usize,
-    pub symbols: Option<Vec<char>>
+    pub symbols: Option<Vec<char>>,
 }
 
 impl PasswordConfig {
@@ -12,17 +12,25 @@ impl PasswordConfig {
         PasswordConfig::default()
     }
 
-    pub fn with_params(required_length: usize, lower_case: bool,
-                       upper_case: bool, numbers: bool) -> PasswordConfig {
-        if !(required_length > 0 && (lower_case || upper_case || numbers)) {
-            panic!("The required length has to be greater than 0 and atlease one of \
-            lower/upper/digits flags must be specified");
+    pub fn with_params(
+        required_length: usize,
+        lower_case: bool,
+        upper_case: bool,
+        numbers: bool,
+        symbols: Option<Vec<char>>,
+    ) -> PasswordConfig {
+        if !(required_length > 0 && (lower_case || upper_case || numbers || symbols.is_some())) {
+            eprintln!(
+                "The required length has to be greater than 0 and at least one of \
+                 lower/upper/digits flags or symbols must be specified"
+            );
+            std::process::exit(1);
         }
         PasswordConfig {
             letters: lower_case,
             numbers,
             caps: upper_case,
-            symbols: None,
+            symbols,
             length: required_length,
         }
     }
