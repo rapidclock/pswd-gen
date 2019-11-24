@@ -2,7 +2,7 @@
 <br>
 A Customizable CLI Random Password Generator
 
-## Instructions:
+## Usage
 
 ```
 This is a Configurable Random Password Generator, which generates a random password of a specified size. The composition
@@ -21,6 +21,28 @@ FLAGS:
 
 OPTIONS:
     -s, --req-size <size>      Used to specify the desired size of the generated password [default: 12]
-    -y, --symbols <symbols>    Allows the presence of ascii symbols in the generated string
-
+    -y, --symbols <symbols>    Allows ascii symbols in the generated string. This is a non-delimited string containing
+                               the various symbols that you need. Eg: "*&#$"
 ```
+
+## Examples
+
+- Only lowercase with default size (12 chars)
+> pswd-gen -l
+
+- lower + upper case only with size = 15
+> pswd-gen -lus 15
+
+or
+> pswd-gen -lu -s 15
+
+- upper + digits, default size
+> pswd-gen -ld
+
+- lower + upper plus symbols `$, #, @, *`
+> pswd-gen -lu -y "$#@*"
+
+- lower + upper + digits + symbols `, ; * $ -`, size = 10
+> pswd-gen -lud -s 10 -y ",;*$-"
+
+> pswd-gen -lud -y "#@!" -s 10

@@ -38,7 +38,9 @@ fn main() {
         )
         .arg(
             Arg::with_name("symbols")
-                .help("Allows the presence of ascii symbols in the generated string")
+                .help("Allows ascii symbols in the generated string. \
+                This is a non-delimited string containing the various symbols that you need. \
+                Eg: \"*&#$\"")
                 .short("y")
                 .long("symbols")
                 .takes_value(true),
