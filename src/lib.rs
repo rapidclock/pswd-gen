@@ -28,7 +28,7 @@ mod tests {
     fn test_only_lowercase() {
         let req_len = 8;
         let config = conf::PasswordConfig::with_params(req_len, true, false, false, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()
@@ -39,7 +39,7 @@ mod tests {
     fn test_only_uppercase() {
         let req_len = 8;
         let config = conf::PasswordConfig::with_params(req_len, false, true, false, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()
@@ -50,7 +50,7 @@ mod tests {
     fn test_only_digits() {
         let req_len = 8;
         let config = conf::PasswordConfig::with_params(req_len, false, false, true, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()
@@ -61,7 +61,7 @@ mod tests {
     fn test_only_lowercase_and_uppercase() {
         let req_len = 8;
         let config = conf::PasswordConfig::with_params(req_len, true, true, false, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()
@@ -72,7 +72,7 @@ mod tests {
     fn test_any_but_no_caps() {
         let req_len = 12;
         let config = conf::PasswordConfig::with_params(req_len, true, false, true, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()
@@ -83,7 +83,7 @@ mod tests {
     fn test_alphanumeric() {
         let req_len = 8;
         let config = conf::PasswordConfig::with_params(req_len, true, true, true, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()
@@ -91,17 +91,17 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn test_no_length_should_panic() {
         let req_len = 0;
-        conf::PasswordConfig::with_params(req_len, true, true, true, None);
+        let config = conf::PasswordConfig::with_params(req_len, true, true, true, None);
+        assert!(config.is_err())
     }
 
     #[test]
-    #[should_panic]
     fn test_valid_length_no_char_type_selected_should_panic() {
         let req_len = 8;
-        conf::PasswordConfig::with_params(req_len, false, false, false, None);
+        let config = conf::PasswordConfig::with_params(req_len, false, false, false, None);
+        assert!(config.is_err())
     }
 
     #[test]
@@ -109,7 +109,7 @@ mod tests {
     fn test_very_long_alphanumeric() {
         let req_len = 1_000_000_000;
         let config = conf::PasswordConfig::with_params(req_len, true, true, true, None);
-        let generated_password = make_new_password(config);
+        let generated_password = make_new_password(config.unwrap());
         assert_eq!(req_len, generated_password.len());
         generated_password
             .chars()

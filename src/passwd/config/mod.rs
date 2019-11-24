@@ -18,20 +18,19 @@ impl PasswordConfig {
         upper_case: bool,
         numbers: bool,
         symbols: Option<Vec<char>>,
-    ) -> PasswordConfig {
+    ) -> Result<PasswordConfig, &'static str> {
         if !(required_length > 0 && (lower_case || upper_case || numbers || symbols.is_some())) {
-            eprintln!(
-                "The required length has to be greater than 0 and at least one of \
-                 lower/upper/digits flags or symbols must be specified"
-            );
-            std::process::exit(1);
-        }
-        PasswordConfig {
-            letters: lower_case,
-            numbers,
-            caps: upper_case,
-            symbols,
-            length: required_length,
+            Err(
+                "The required length has to be greater than 0 and at least one of lower/upper/digits flags or symbols must be specified"
+            )
+        } else {
+            Ok(PasswordConfig {
+                letters: lower_case,
+                numbers,
+                caps: upper_case,
+                symbols,
+                length: required_length,
+            })
         }
     }
 }

@@ -85,5 +85,14 @@ fn main() {
         cli_matches.is_present("digits"),
         values,
     );
-    println!("{}", pswd_gen::make_new_password(config));
+
+    match config {
+        Ok(config) => {
+            println!("{}", pswd_gen::make_new_password(config));
+        }
+        Err(err) => {
+            eprintln!("{}", err);
+            std::process::exit(1);
+        }
+    }
 }
