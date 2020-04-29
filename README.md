@@ -1,5 +1,7 @@
-# pswd-gen [![Build Status](https://travis-ci.com/rapidclock/pswd-gen.svg?token=hJhLfHtyz41UyuLTTdFx&branch=master)](https://travis-ci.com/rapidclock/pswd-gen)
-<br>
+# pswd-gen
+
+![Rust](https://github.com/rapidclock/pswd-gen/workflows/Rust/badge.svg)
+
 A Customizable CLI Random Password Generator
 
 ## Usage
